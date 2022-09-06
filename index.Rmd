@@ -281,6 +281,7 @@ birpl_model_v1 <- "F = 1-15
 ---
 ## Veri aktarımı
 
+`r fontawesome::fa(name = "link")`: [Veriyi açılan linkten farklı kaydet ile alabilirsiniz.](https://raw.githubusercontent.com/atalay-k/mirt_k/main/dichotomous.csv)
 ```{r}
 ikikategorili <- read_csv("dichotomous.csv")[,-1]
 head(ikikategorili)
@@ -810,64 +811,62 @@ ggplotly(ucpl)
 ---
 ##  3-PL Model için Madde Karakteristik Eğrisi
 
-- Madde 1 ve Madde 4 arasındaki karşılaştırma, **b parametresinin** MKE şeklindeki rolünü vurgulamaktadır.
+- Madde 1 ve Madde 4 ait MKE arasındaki karşılaştırma hangi parametrenin rolunu vurgulamaktadır?
 
 --
 
-.pull-left[
 ```{r echo=FALSE}
 ggplotly(ucpl) 
 
 ```
-]
 
---
 
-.pull-right[
+---
+##  3-PL Model için Madde Karakteristik Eğrisi
+
 - Madde 1 için $b_1$ = 1.0 ve $a_1$  = 1.8 ve $c_1$  = 0
 - Madde 4 için $b_4$ = -1.5 ve $a_4$  = 1.8 ve $c_4$  = 0
-]
+
+
 ---
 ##  3-PL Model için Madde Karakteristik Eğrisi
 
-- Madde 1 ve Madde 2 arasındaki karşılaştırma, **a parametresinin** MKE dikliğindeki rolünü vurgulamaktadır.
+- Madde 1 ve Madde 2 ait MKE arasındaki karşılaştırma hangi parametrenin rolunu vurgulamaktadır?
 
 --
 
-.pull-left[
 ```{r echo=FALSE}
 ggplotly(ucpl) 
 
 ```
-]
 
---
 
-.pull-right[
+
+---
+##  3-PL Model için Madde Karakteristik Eğrisi
+
 - Madde 1 için $b_1$ = 1.0 ve $a_1$  = 1.8 ve $c_1$  = 0
 - Madde 2 için $b_2$ = 1.0 ve $a_2$  = 0.8 ve $c_2$  = 0
-]
+
 
 ---
 ##  3-PL Model için Madde Karakteristik Eğrisi
 
-- Madde 1 ve Madde 3 arasındaki karşılaştırma, **c parametresinin** MKE şeklindeki rolünü vurgulamaktadır.
-
+- Madde 1 ve Madde 3  ait MKE arasındaki karşılaştırma hangi parametrenin rolunu vurgulamaktadır?
 --
 
-.pull-left[
 ```{r echo=FALSE}
 ggplotly(ucpl) 
 
 ```
-]
 
---
 
-.pull-right[
+---
+##  3-PL Model için Madde Karakteristik Eğrisi
+
 - Madde 1 için $b_1$ = 1.0 ve $a_1$  = 1.8 ve $c_1$  = 0
 - Madde 3 için $b_3$ = 1.0 ve $a_3$  = 1.8 ve $c_3$  = 0.25
-]
+
 ---
 ##  3-PL Model için Madde Karakteristik Eğrisi
 
@@ -938,10 +937,19 @@ MTK modellerinde başlıca üç yolla puanlama yapılır:
 - Maksimum a Posteriori (MAP)
 - Expected/estimated a Posteriori (EAP)
 
+---
+##  Yetenek Parametresi Kestirimi
+
+- Bireylerin faktör puanları veya gizil özellik düzeyi kestirimleri **fscores()** fonksiyonuyla hesaplanabilir. 
+
+- **fscores()* fonksiyonunun birinci argümanı object olup bu argümanın değeri **mirt()** fonksiyonunun çıktısı olarak kaydedilen nesnelerdir. Kestirim yönteminin türü method argümanıyla maksimum olabilirlik (ML) olarak belirlenmiştir. 
+
+- full.scores.SE argümanı için de TRUE değeri seçilerek kestirimlerin standart hataları istenebilir.
+
 ```{r}
-ML   <- fscores(ikipl_uyum, method="ML")
-MAP  <- fscores(ikipl_uyum, method="MAP")
-EAP  <- fscores(ikipl_uyum, method="EAP")
+ML   <- fscores(ikipl_uyum, method="ML",full.scores.SE=TRUE)
+MAP  <- fscores(ikipl_uyum, method="MAP", full.scores.SE=TRUE)
+EAP  <- fscores(ikipl_uyum, method="EAP",full.scores.SE=TRUE)
 ```
 
 ---
@@ -1258,7 +1266,7 @@ plot(Theta, tinfo, type = 'l')
 ]
 .three-column[
 ```{r}
-tinfo <- testinfo(birpl_uyum, 
+tinfo <- testinfo(ikipl_uyum, 
 Theta,which.items = 1:10)
 plot(Theta, tinfo, type = 'l')
 ```
@@ -1266,7 +1274,7 @@ plot(Theta, tinfo, type = 'l')
 .three-column[
 
 ```{r}
-tinfo <- testinfo(birpl_uyum, 
+tinfo <- testinfo(ikipl_uyum, 
 Theta,which.items = 1:15)
 plot(Theta, tinfo, type = 'l')
 ```
@@ -1275,14 +1283,32 @@ plot(Theta, tinfo, type = 'l')
 
 ## Test Bilgi Fonksiyonu
 ```{r}
-tinfo <- testinfo(birpl_uyum, Theta,which.items = c(1,3:5,7:10,11))
+tinfo <- testinfo(ikipl_uyum, Theta,which.items = c(1,3:5,7:10,11))
 plot(Theta, tinfo, type = 'l')
 ```
 
 ---
 
+## Test Bilgi Fonksiyonu
+
+```{r}
+plot(birpl_uyum, type='infoSE')
+```
+---
 
 
+
+## Kaynaklar
+
+-  Atar, B., Atalay Kabasakal, K, Unsal Ozberk, E. B., Ozberk, E. H. & Kibrislioglu Uysal, N. (2020). R ile Veri Analizi ve Psikometri Uygulamaları, Pegem Akademi, Ankara.
+
+- Chalmers, R. P. (2012). mirt: A multidimensional item response theory package for the R environment. Journal of Statistical Software, 48(6), 1-29.
+
+- Desjardins, C.D., & Bulut, O. (2017). Handbook of Educational Measurement and Psychometrics Using R (1st ed.). Chapman and Hall/CRC. https://doi.org/10.1201/b20498
+
+
+
+---
 .center[
 <br>
 <br>
