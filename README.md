@@ -7,3 +7,5 @@ Kuramdan Uygulamaya Bilgisayar Ortamında Bireye Uyarlanmış Test Geliştirme
 Boğaziçi Üniversitesi
 
 [sunu](https://atalay-k.github.io/mirt_k/)
+[veri](https://raw.githubusercontent.com/atalay-k/mirt_k/main/dichotomous.csv)
+[ödev veri](https://raw.githubusercontent.com/atalay-k/mirt_k/main/veri.csv/)
