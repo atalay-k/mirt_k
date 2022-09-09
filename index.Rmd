@@ -2,7 +2,7 @@
 title: "`r emo::ji('stats')` Bilgisayar Ortamında Bireye Uyarlanmış Test Nasıl Geliştirilir"
 subtitle: "<br> `r emo::ji('graph')` Madde Tepki Kuramı ile Madde Analizi Uygulaması"
 author: "Dr. Kubra Atalay Kabasakal" 
-date: "12 Eylül 2022 - Boğaziçi Üniversitesi"
+date: "13 Eylül 2022 - Boğaziçi Üniversitesi"
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -73,10 +73,6 @@ library(knitr)
 --
 
 - madde ve test bilgi fonksiyonu 
-
---
-
-- çok kategorili (kısmi puanlama) MTK modelleri
 
 --
 
@@ -257,6 +253,7 @@ ggplotly(birpl)
 library("mirt")
 ```
 
+- MTK analizlerinin yapılacağı paketlere **ltm** Rizopoulos (2006) ve  **irtoys** Partchev vd. (2017) örnek veriebilir. Choi(2019) [makalesinde](https://doi.org/10.1080/15366367.2019.1586404) 45 farklı MTK paketine ilişkin açıklamalar bulunmaktadır. 
 ---
 ## 1PL modelin hazırlanması
 
@@ -282,11 +279,39 @@ birpl_model_v1 <- "F = 1-15
 ## Veri aktarımı
 
 `r fontawesome::fa(name = "link")`: [Veriyi açılan linkten farklı kaydet ile alabilirsiniz.](https://raw.githubusercontent.com/atalay-k/mirt_k/main/dichotomous.csv)
+.pull-left[
 ```{r}
 ikikategorili <- read_csv("dichotomous.csv")[,-1]
-head(ikikategorili)
+head(ikikategorili[,1:5])
+```
+]
+.pull-right[
+```{r}
+
 summary(ikikategorili)
 ```
+]
+---
+## Veri aktarımı
+
+- Veriyi 1-0 olarak puanlamak için **key2binary()**
+fonksiyonunu kullanabilirsiniz.
+```{r}
+veri <- read_csv("veri.csv")
+library(mirt)
+dat1 <- key2binary(veri[,-1],
+    key = c(2,3,4,5,2,3,4,5,2,3,4,5))
+```
+.pull-left[
+```{r}
+head(veri[,1:5])
+```
+]
+.pull-right[
+```{r}
+head(dat1)
+```
+]
 
 ---
 ## Madde Istatistikleri
@@ -295,6 +320,7 @@ summary(ikikategorili)
 itemstats(ikikategorili)
 ```
 
+ 
 ---
 ## Parametre Kestirimleri
 
@@ -304,7 +330,7 @@ itemstats(ikikategorili)
 ```{r eval=FALSE}
 birpl_model <- "F = 1-15
                 CONSTRAIN = (1-15, a1)"
-birpl_uyum <- mirt(data = ikikategorili, model = birpl_model)
+birpl_uyum <- mirt(data = ikikategorili, model = birpl_model,SE=TRUE)
 ```
 
 - birpl_uyum nesnesi
@@ -312,6 +338,64 @@ birpl_uyum <- mirt(data = ikikategorili, model = birpl_model)
  - gizil özelliğin ortalamasını
  - gizil özelliğin varyans-kovaryans matrisini
  - kestirim sürecine ilişkin ek bilgileri içerir.
+
+---
+## Varsayımlar
+- Tek boyutluluk tek boyutlu MTK modelleri, tüm maddelerin tek bir sürekli gizli değişkeni ölçtüğünü varsayar. 
+- Tek boyutluluk varsayımını test etmenin farklı yolları vardır. Örneğin, kavramsal olarak genel bir faktör tarafından hesaplanan ölçek puanlarındaki varyans yüzdesini yansıtan McDonald's hiyerarşik Omega'sını  değerlendirebiliriz.
+
+```{r}
+library(psych)
+summary(omega(ikikategorili, plot = F))
+```
+
+---
+## Varsayımlar
+
+- yerel bağımsızlık ise Yen'in Q3 istatistiği ile kontrol edilebilir.
+
+```{r include=FALSE}
+birpl_uyum <- mirt(data = ikikategorili, model = birpl_model,SE=TRUE)
+```
+
+
+```{r}
+ Q3 <- residuals(birpl_uyum, type = 'Q3', method = 'ML')
+
+```
+
+---
+## Varsayımlar
+
+- yerel bağımsızlık
+```{r}
+Q3[lower.tri(Q3,diag = TRUE)] <- NA
+sum(abs(Q3) >0.2,na.rm=TRUE)
+```
+
+---
+## Model Uyumu
+
+```{r}
+ M2(birpl_uyum)
+```
+
+- Elde edilen 
+- **RMSEA** değeri = 0.0648 (%95 CI[0.0594, 0.0702]) ve - **SRMSR** değeri = 0.0929, önerilen eşik değerleri olan **RMSEA <= .06** 
+- **SRMSR <= .08** kullanılarak verilerin modelin iyi uyum **sağlamadığını** göstermektedir.
+
+---
+## Model Uyumu
+
+Madde uyumlarına baktığımızda özellikle V1, V2 maddelerinde yüksek ki-kare ve ve RMSEA değerleri gözlenmektedir.
+
+```{r}
+itemfit(birpl_uyum)
+
+```
+
+
+
 
 ---
 ## Parametre Kestirimleri
@@ -640,11 +724,26 @@ ikipl_model <- "F = 1 - 15"
 - Modelin testi
 ```{r}
 ikipl_uyum <- mirt(data = ikikategorili, model = ikipl_model,
-itemtype = "2PL")
+itemtype = "2PL", SE=TRUE)
 
 ```
 
-- Parametrelerin incelenmesi
+---
+##  2-PL Model için Model Uyum
+```{r}
+M2(ikipl_uyum)
+
+```
+
+---
+##  2-PL Model için Madde Uyum
+```{r}
+itemfit(ikipl_uyum)
+```
+
+
+---
+##  2-PL Model Parametrelerin incelenmesi
 ```{r}
 ikipl_par <- coef(ikipl_uyum, IRTpars = TRUE, simplify = TRUE)
 ```
@@ -718,6 +817,20 @@ itemtype = "3PL")
 - Parametrelerin incelenmesi
 ```{r}
 ucpl_par <- coef(ucpl_uyum, IRTpars = TRUE, simplify = TRUE)
+```
+
+---
+
+##  3-PL Model için Model Uyum
+```{r}
+M2(ucpl_uyum)
+
+```
+
+---
+##  3-PL Model için Madde Uyum
+```{r}
+itemfit(ucpl_uyum)
 ```
 
 ---
@@ -942,7 +1055,7 @@ MTK modellerinde başlıca üç yolla puanlama yapılır:
 
 - Bireylerin faktör puanları veya gizil özellik düzeyi kestirimleri **fscores()** fonksiyonuyla hesaplanabilir. 
 
-- **fscores()* fonksiyonunun birinci argümanı object olup bu argümanın değeri **mirt()** fonksiyonunun çıktısı olarak kaydedilen nesnelerdir. Kestirim yönteminin türü method argümanıyla maksimum olabilirlik (ML) olarak belirlenmiştir. 
+- **fscores()** fonksiyonunun birinci argümanı object olup bu argümanın değeri **mirt()** fonksiyonunun çıktısı olarak kaydedilen nesnelerdir. Kestirim yönteminin türü method argümanıyla maksimum olabilirlik (ML) olarak belirlenmiştir. 
 
 - full.scores.SE argümanı için de TRUE değeri seçilerek kestirimlerin standart hataları istenebilir.
 
@@ -984,15 +1097,22 @@ apply(yetenek,2,summary)
 
 ---
 ##  Yetenek Parametresi Kestirimi
+```{r}
+yetenek_v1 <- yetenek[!is.infinite(yetenek$ML),]
+
+apply(yetenek_v1,2,summary)
+```
+---
+##  Yetenek Parametresi Kestirimi
 
 .pull-left[
 ```{r}
-cor(yetenek)
+cor(yetenek_v1)
 ```
 ]
 .pull-right[
 ```{r}
-pairs(yetenek)
+pairs(yetenek_v1)
 
 ```
 ]
@@ -1247,7 +1367,7 @@ Hedef bilgi fonksiyonu
 Örneğin,
 
 ```{r echo=FALSE, fig.align='center',out.width="60%"}
-knitr::include_graphics("bilgi.PNG")
+knitr::include_graphics("img/bilgi.png")
 ```
 
 - Maddeler seçilir ve test bilgi fonksiyonu hesaplanır ve hedef bilgi fonksiyonuyla karşılaştırılır.
@@ -1294,8 +1414,20 @@ plot(Theta, tinfo, type = 'l')
 ```{r}
 plot(birpl_uyum, type='infoSE')
 ```
+
 ---
 
+
+## Sıra Sizde
+
+1.`r fontawesome::fa(name = "link")`: [Veriyi açılan linkten farklı kaydet ile alabilirsiniz.](https://raw.githubusercontent.com/atalay-k/mirt_k/main/veri.csv)
+2. MTK varsayamlarını test ediniz.
+3. Verinin hangi MTK modeline daha iyi uyum sağladığını inceleyiniz.
+4. Madde parametrelerini ve adde karakteristik eğrileri ile birlikte raporlayınız.
+5. Yetenek paramterelerini kestiriniz
+6. Test bilgi fonskiyonun grafiğini çiziniz.
+
+---
 
 
 ## Kaynaklar
@@ -1316,6 +1448,8 @@ plot(birpl_uyum, type='infoSE')
 
 .hand[Teşekkürler]
 
+`r emo::ji("thanks")`
+ 
 ]
 ```{r include=FALSE}
 # xaringanBuilder::build_pdf("mirt.Rmd")
