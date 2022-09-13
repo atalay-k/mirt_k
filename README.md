@@ -7,8 +7,14 @@ Boğaziçi Üniversitesi**
 
 Madde Tepki Kuramı ile Madde Analizi Uygulaması
 
-- [sunu](https://atalay-k.github.io/mirt_k/)
+- kullanılacak veriler
+- 
+  - [Sunu veri](https://raw.githubusercontent.com/atalay-k/mirt_k/main/dichotomous.csv)
+  
+  - [Ödev Veri](https://raw.githubusercontent.com/atalay-k/mirt_k/main/dat1.csv) 
 
-- [veri](https://raw.githubusercontent.com/atalay-k/mirt_k/main/dichotomous.csv)
-
-- [ödev veri](https://raw.githubusercontent.com/atalay-k/mirt_k/main/veri.csv/)
+- kodlar
+- 
+  - [Kodlar](https://raw.githubusercontent.com/atalay-k/mirt_k/main/kodlar.R) 
+  
+  - [Sunum](https://atalay-k.github.io/mirt_k/#1) 
